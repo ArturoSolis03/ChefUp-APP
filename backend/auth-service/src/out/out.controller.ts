@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Get,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import { OutService } from './out.service';
 import { SignUpDto } from './dto/singup.dto';
@@ -24,6 +25,12 @@ export class OutController {
   @Post('signup')
   signup(@Body() dto: SignUpDto): Promise<Tokens> {
     return this.outService.signup(dto);
+  }
+
+  @Post('validate')
+  @UseGuards(JwtAuthGuard)
+  async validate(@Req() req: any) {
+    return req.user;
   }
 
   // SYNC IN: Login

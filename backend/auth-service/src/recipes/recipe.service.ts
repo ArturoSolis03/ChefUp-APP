@@ -23,4 +23,26 @@ export class RecipeService {
       imageType: recipe.imageType,
     }));
   }
+
+  async getRecipeById(id: string, userToken: string): Promise<any> {
+    if (!userToken) throw new UnauthorizedException('Missing token');
+
+    const url = `https://api.spoonacular.com/recipes/${id}/information`;
+
+    const response = await axios.get(url, {
+      params: {
+        apiKey: this.apiKey,
+      },
+    });
+
+    return {
+      id: response.data.id,
+      title: response.data.title,
+      image: response.data.image,
+      summary: response.data.summary,
+      readyInMinutes: response.data.readyInMinutes,
+      servings: response.data.servings,
+      sourceUrl: response.data.sourceUrl,
+    };
+  }
 }
