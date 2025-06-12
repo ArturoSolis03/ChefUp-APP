@@ -21,7 +21,7 @@ export class FavoritesController {
     const { id, title, image, imageType } = body;
 
     const recipe = {
-      recipeId: id, // <-- aquí lo renombras
+      recipeId: id, 
       title,
       image,
       imageType,
