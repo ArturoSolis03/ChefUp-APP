@@ -9,6 +9,9 @@ import { Tokens } from './types';
 
 @Injectable()
 export class OutService {
+  verify(token: any) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
