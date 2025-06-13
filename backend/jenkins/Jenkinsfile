@@ -1,0 +1,57 @@
+pipeline {
+  agent any
+
+  environment {
+    FLY_API_TOKEN = credentials('FLY_API_TOKEN')
+    PATH = "${HOME}/.fly/bin:${PATH}"
+  }
+
+  stages {
+    stage('Clonar Repositorio') {
+      steps {
+        git 'https://github.com/tu-usuario/tu-repo.git'
+      }
+    }
+
+    stage('Instalar Fly CLI') {
+      steps {
+        sh '''
+          if ! command -v fly &> /dev/null; then
+            curl -L https://fly.io/install.sh | sh
+          fi
+        '''
+      }
+    }
+
+    stage('Deploy Auth Service') {
+      steps {
+        dir('auth-service') {
+          sh '''
+            export FLY_ACCESS_TOKEN=$FLY_API_TOKEN
+            fly deploy --remote-only
+          '''
+        }
+      }
+    }
+
+    stage('Deploy Recipes Service') {
+      steps {
+        dir('recipes-service') {
+          sh '''
+            export FLY_ACCESS_TOKEN=$FLY_API_TOKEN
+            fly deploy --remote-only
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    success {
+      echo '✅ Microservicios desplegados con éxito en Fly.io.'
+    }
+    failure {
+      echo '❌ Algo falló en el despliegue.'
+    }
+  }
+}
