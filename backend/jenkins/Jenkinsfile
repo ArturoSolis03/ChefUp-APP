@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('Clonar Repositorio') {
       steps {
-        git 'https://github.com/tu-usuario/tu-repo.git'
+        git 'https://github.com/ArturoSolis03/ChefUp-APP/tree/backend/backend'
       }
     }
 
@@ -34,9 +34,9 @@ pipeline {
       }
     }
 
-    stage('Deploy Recipes Service') {
+    stage('Deploy Favorites Service') {
       steps {
-        dir('recipes-service') {
+        dir('favorites-service') {
           sh '''
             export FLY_ACCESS_TOKEN=$FLY_API_TOKEN
             fly deploy --remote-only
