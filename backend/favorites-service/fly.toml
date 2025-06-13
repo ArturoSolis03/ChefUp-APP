@@ -1,0 +1,26 @@
+app = "favorites-service"  # Cambia el nombre si quieres algo específico en Fly.io
+
+[build]
+  image = "favorites-service" # El mismo tag que usas en Docker build
+
+[env]
+  PORT = "3001"
+  MONGODB_URI = "mongodb+srv://Cheff:Admin123@cheffupapp.jezpeq5.mongodb.net/?retryWrites=true&w=majority&appName=CheffUpApp"
+  ACCESS_TOKEN_SECRET = "admin1"
+
+[deploy]
+  release_command = "npm run build"
+
+[[services]]
+  internal_port = 3001
+  protocol = "tcp"
+
+  [[services.ports]]
+    port = 3001
+    handlers = ["http"]
+
+  [[services.tcp_checks]]
+    interval = 10000
+    timeout = 2000
+    grace_period = "10s"
+    restart_limit = 6
