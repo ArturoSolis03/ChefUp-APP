@@ -1,57 +1,48 @@
 pipeline {
   agent any
 
-  environment {
-    FLY_API_TOKEN = credentials('FLY_API_TOKEN')
-    PATH = "${HOME}/.fly/bin:${PATH}"
-  }
-
   stages {
     stage('Clonar Repositorio') {
       steps {
-        git 'https://github.com/ArturoSolis03/ChefUp-APP/tree/backend/backend'
+        git branch: 'backend', url: 'https://github.com/ArturoSolis03/ChefUp-APP.git'
       }
     }
 
-    stage('Instalar Fly CLI') {
-      steps {
-        sh '''
-          if ! command -v fly &> /dev/null; then
-            curl -L https://fly.io/install.sh | sh
-          fi
-        '''
-      }
-    }
-
-    stage('Deploy Auth Service') {
+    stage('Build Auth Service') {
       steps {
         dir('auth-service') {
-          sh '''
-            export FLY_ACCESS_TOKEN=$FLY_API_TOKEN
-            fly deploy --remote-only
-          '''
+          sh 'docker build -t auth-service .'
         }
       }
     }
 
-    stage('Deploy Favorites Service') {
+    stage('Build Favorites Service') {
       steps {
         dir('favorites-service') {
-          sh '''
-            export FLY_ACCESS_TOKEN=$FLY_API_TOKEN
-            fly deploy --remote-only
-          '''
+          sh 'docker build -t favorites-service .'
         }
+      }
+    }
+
+    stage('Run Containers') {
+      steps {
+        sh '''
+          docker stop auth-service || true && docker rm auth-service || true
+          docker stop favorites-service || true && docker rm favorites-service || true
+
+          docker run -d --name auth-service -p 3000:3000 --env-file auth-service/.env auth-service
+          docker run -d --name favorites-service -p 3001:3001 --env-file favorites-service/.env favorites-service
+        '''
       }
     }
   }
 
   post {
     success {
-      echo '✅ Microservicios desplegados con éxito en Fly.io.'
+      echo '✅ Microservicios desplegados localmente en EC2 con Docker.'
     }
     failure {
-      echo '❌ Algo falló en el despliegue.'
+      echo '❌ Falló el despliegue en EC2.'
     }
   }
 }
