@@ -20,6 +20,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/passport": "^9.x.x",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "bcrypt": "^5.1.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
