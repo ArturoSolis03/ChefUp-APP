@@ -31,8 +31,17 @@ pipeline {
 
     stage('Run Containers') {
       steps {
-        sh "docker run -d --name auth-service -p 3000:3000 ${env.PROJECT_NAME_AUTH}-image"
-        sh "docker run -d --name favorites-service -p 3001:3001 ${env.PROJECT_NAME_FAV}-image"
+        sh '''
+          # Detener y eliminar contenedores si ya existen
+          docker stop auth-service || true
+          docker rm auth-service || true
+          docker stop favorites-service || true
+          docker rm favorites-service || true
+
+          # Ejecutar nuevos contenedores
+          docker run -d --name auth-service -p 3000:3000 auth-service-image
+          docker run -d --name favorites-service -p 3001:3001 favorites-service-image
+        '''
       }
     }
   }
