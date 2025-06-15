@@ -1,6 +1,11 @@
-
 FROM node:20-alpine
 
+
+RUN echo "hosts: files dns" > /etc/nsswitch.conf
+
+
+RUN npm config delete proxy || true && \
+    npm config delete https-proxy || true
 
 WORKDIR /app
 
@@ -8,16 +13,13 @@ WORKDIR /app
 COPY package*.json ./
 
 
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 
 COPY . .
 
 
-RUN npm run build
-
-
 EXPOSE 3000
 
 
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:prod"]
