@@ -1,25 +1,24 @@
-
-FROM node:20-alpine
-
-
-RUN echo "hosts: files dns" > /etc/nsswitch.conf
-
-
-RUN npm config delete proxy || true && \
-    npm config delete https-proxy || true
-
+# Stage 1: build
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-
 COPY package*.json ./
-
-
 RUN npm install --legacy-peer-deps
 
-
 COPY . .
+RUN npm run build
+
+# Stage 2: producción
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --production --legacy-peer-deps
+
+COPY --from=builder /app/dist ./dist
 
 EXPOSE 3001
 
-CMD ["npm", "run", "start:prod"]
+CMD ["node", "dist/main"]
