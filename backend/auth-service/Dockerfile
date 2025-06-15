@@ -7,7 +7,6 @@ COPY package*.json ./
 RUN npm install --legacy-peer-deps
 
 COPY . .
-COPY .env .env
 RUN npm run build
 
 # Stage 2: producción
