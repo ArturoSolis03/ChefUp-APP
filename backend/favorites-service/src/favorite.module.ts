@@ -3,15 +3,27 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { FavoritesController } from './controllers/favorite-controller';
 import { FavoritesService } from './services/favorite.service';
 import { FavoriteSchema } from './schemas/favorite.schema';
-import { AuthService } from './services/auth.service';
-import { HttpModule } from '@nestjs/axios';
+
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
-    HttpModule,
+    ConfigModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
+        signOptions: { expiresIn: '900s' }, // opcional
+      }),
+    }),
     MongooseModule.forFeature([{ name: 'Favorite', schema: FavoriteSchema }]),
   ],
-  providers: [FavoritesService, AuthService],
+  providers: [FavoritesService, JwtStrategy],
   controllers: [FavoritesController],
 })
 export class FavoritesModule {}

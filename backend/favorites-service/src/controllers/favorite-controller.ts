@@ -6,22 +6,20 @@ import {
   Body,
   Param,
   Req,
-  Headers,
+  UseGuards,
 } from '@nestjs/common';
 import { FavoritesService } from 'src/services/favorite.service';
-import { AuthService } from 'src/services/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 
 @Controller('favorites')
+@UseGuards(AuthGuard('jwt')) // ← protege todo el controller
 export class FavoritesController {
-  constructor(
-    private readonly favoritesService: FavoritesService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly favoritesService: FavoritesService) {}
 
   @Post()
-  async add(@Headers('authorization') authHeader: string, @Body() body: any) {
-    const user = await this.authService.validateToken(authHeader);
+  async add(@Req() req: Request, @Body() body: any) {
+    const user = req.user as any;
 
     const { id, title, image, imageType } = body;
 
@@ -32,21 +30,18 @@ export class FavoritesController {
       imageType,
     };
 
-    return this.favoritesService.addFavorite(user.id, recipe);
+    return this.favoritesService.addFavorite(user.sub, recipe);
   }
 
   @Delete(':recipeId')
-  async remove(
-    @Headers('authorization') authHeader: string,
-    @Param('recipeId') recipeId: number,
-  ) {
-    const user = await this.authService.validateToken(authHeader);
-    return this.favoritesService.removeFavorite(user.id, Number(recipeId));
+  async remove(@Req() req: Request, @Param('recipeId') recipeId: number) {
+    const user = req.user as any;
+    return this.favoritesService.removeFavorite(user.sub, Number(recipeId));
   }
 
   @Get()
-  async getAll(@Headers('authorization') authHeader: string) {
-    const user = await this.authService.validateToken(authHeader);
-    return this.favoritesService.getFavorites(user.id);
+  async getAll(@Req() req: Request) {
+    const user = req.user as any;
+    return this.favoritesService.getFavorites(user.sub);
   }
 }
