@@ -4,6 +4,18 @@ pipeline {
   environment {
     PROJECT_NAME_AUTH = "auth-service"
     PROJECT_NAME_FAV = "favorites-service"
+
+    // AUTH SERVICE ENV VARS
+    MONGODB_URI_AUTH = "mongodb+srv://Cheff:Admin123@cheffupapp.jezpeq5.mongodb.net/?retryWrites=true&w=majority&appName=CheffUpApp"
+    ACCESS_TOKEN_SECRET = "admin1"
+    ACCESS_TOKEN_EXPIRATION = "1h"
+    REFRESH_TOKEN_SECRET = "admin2"
+    REFRESH_TOKEN_EXPIRATION = "7d"
+    SPOONACULAR_API_KEY = "3d6a46320ba2476bb864cb87058341a5"
+
+    // FAVORITES SERVICE ENV VARS
+    MONGODB_URI_FAV = "mongodb+srv://Cheff:Admin123@cheffupapp.jezpeq5.mongodb.net/?retryWrites=true&w=majority&appName=CheffUpApp"
+    PORT_FAV = "3001"
   }
 
   stages {
@@ -32,15 +44,26 @@ pipeline {
     stage('Run Containers') {
       steps {
         sh '''
-          # Detener y eliminar contenedores si ya existen
-          docker stop auth-service || true
-          docker rm auth-service || true
-          docker stop favorites-service || true
-          docker rm favorites-service || true
+          # Limpiar contenedores anteriores
+          docker rm -f auth-service || true
+          docker rm -f favorites-service || true
 
-          # Ejecutar nuevos contenedores
-          docker run -d --name auth-service -p 3000:3000 auth-service-image
-          docker run -d --name favorites-service -p 3001:3001 favorites-service-image
+          # Ejecutar Auth Service con env vars
+          docker run -d --name auth-service -p 3000:3000 \
+            -e MONGODB_URI="$MONGODB_URI_AUTH" \
+            -e ACCESS_TOKEN_SECRET="$ACCESS_TOKEN_SECRET" \
+            -e ACCESS_TOKEN_EXPIRATION="$ACCESS_TOKEN_EXPIRATION" \
+            -e REFRESH_TOKEN_SECRET="$REFRESH_TOKEN_SECRET" \
+            -e REFRESH_TOKEN_EXPIRATION="$REFRESH_TOKEN_EXPIRATION" \
+            -e SPOONACULAR_API_KEY="$SPOONACULAR_API_KEY" \
+            auth-service-image
+
+          # Ejecutar Favorites Service con env vars
+          docker run -d --name favorites-service -p 3001:3001 \
+            -e PORT="$PORT_FAV" \
+            -e MONGODB_URI="$MONGODB_URI_FAV" \
+            -e ACCESS_TOKEN_SECRET="$ACCESS_TOKEN_SECRET" \
+            favorites-service-image
         '''
       }
     }
