@@ -15,11 +15,11 @@ export class RecipeController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getRecipeById(
+  async getRecipeDetails(
     @Param('id') id: string,
     @Headers('authorization') authHeader: string,
   ) {
     const token = authHeader?.replace('Bearer ', '');
-    return this.recipeService.getRecipeById(id, token);
+    return this.recipeService.getRecipeDetails(id, token);
   }
 }
