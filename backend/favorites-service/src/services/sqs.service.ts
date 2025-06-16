@@ -9,7 +9,12 @@ export class SqsService {
 
   constructor(private configService: ConfigService) {
     this.sqs = new SQS({ region: this.configService.get('AWS_REGION') });
-    this.queueUrl = this.configService.get('SQS_QUEUE_URL')!;
+
+    const queueUrl = this.configService.get<string>('SQS_QUEUE_URL');
+    if (!queueUrl) {
+      throw new Error('Missing SQS_QUEUE_URL environment variable');
+    }
+    this.queueUrl = queueUrl;
   }
 
   async sendMessage(messageBody: any) {
