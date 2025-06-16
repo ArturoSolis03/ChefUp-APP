@@ -67,6 +67,7 @@ pipeline {
             -e MONGODB_URI="$MONGODB_URI_FAV" \
             -e ACCESS_TOKEN_SECRET="$ACCESS_TOKEN_SECRET" \
             -e SQS_QUEUE_URL="$SQS_QUEUE_URL" \
+            -e AWS_REGION="$AWS_REGION" \
             favorites-service-image
         '''
       }
