@@ -9,7 +9,7 @@ export class SqsService {
 
   constructor(private configService: ConfigService) {
     const region = this.configService.get('AWS_REGION');
-    console.log('AWS region:', region);
+    console.log('AWS region: ', region);
 
     this.sqs = new SQS({ region });
 
