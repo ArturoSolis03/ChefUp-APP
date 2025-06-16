@@ -8,7 +8,10 @@ export class SqsService {
   private readonly queueUrl: string;
 
   constructor(private configService: ConfigService) {
-    this.sqs = new SQS({ region: this.configService.get('AWS_REGION') });
+    const region = this.configService.get('AWS_REGION');
+    console.log('AWS region:', region);
+
+    this.sqs = new SQS({ region });
 
     const queueUrl = this.configService.get<string>('SQS_QUEUE_URL');
     if (!queueUrl) {
