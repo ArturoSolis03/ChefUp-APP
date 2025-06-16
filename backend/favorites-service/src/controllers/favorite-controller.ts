@@ -20,6 +20,7 @@ export class FavoritesController {
   @Post()
   async add(@Req() req: Request, @Body() body: any) {
     const user = req.user as any;
+    console.log('USER IN CONTROLLER:', user); 
 
     const { id, title, image, imageType } = body;
 
