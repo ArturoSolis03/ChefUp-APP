@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { SqsService } from './services/sqs.service';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
     }),
     MongooseModule.forFeature([{ name: 'Favorite', schema: FavoriteSchema }]),
   ],
-  providers: [FavoritesService, JwtStrategy],
+  providers: [FavoritesService, JwtStrategy, SqsService],
   controllers: [FavoritesController],
 })
 export class FavoritesModule {}
