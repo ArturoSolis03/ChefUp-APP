@@ -31,18 +31,18 @@ export class FavoritesController {
       imageType,
     };
 
-    return this.favoritesService.addFavorite(user.sub, recipe);
+    return this.favoritesService.addFavorite(user.id, recipe);
   }
 
   @Delete(':recipeId')
   async remove(@Req() req: Request, @Param('recipeId') recipeId: number) {
     const user = req.user as any;
-    return this.favoritesService.removeFavorite(user.sub, Number(recipeId));
+    return this.favoritesService.removeFavorite(user.id, Number(recipeId));
   }
 
   @Get()
   async getAll(@Req() req: Request) {
     const user = req.user as any;
-    return this.favoritesService.getFavorites(user.sub);
+    return this.favoritesService.getFavorites(user.id);
   }
 }
