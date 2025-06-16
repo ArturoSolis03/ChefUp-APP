@@ -66,6 +66,8 @@ export class RecipeService {
       image: data.image,
       ingredients: data.extendedIngredients.map((i) => ({
         name: i.name,
+        amount: i.amount,
+        unit: i.unit,
       })),
       instructions: data.instructions,
     };
