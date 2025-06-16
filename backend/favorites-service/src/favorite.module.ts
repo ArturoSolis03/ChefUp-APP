@@ -19,7 +19,7 @@ import { SqsService } from './services/sqs.service';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('ACCESS_TOKEN_SECRET'),
-        signOptions: { expiresIn: '900s' }, // opcional
+        signOptions: { expiresIn: '900s' },
       }),
     }),
     MongooseModule.forFeature([{ name: 'Favorite', schema: FavoriteSchema }]),

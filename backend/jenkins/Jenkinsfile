@@ -66,6 +66,7 @@ pipeline {
             -e PORT="$PORT_FAV" \
             -e MONGODB_URI="$MONGODB_URI_FAV" \
             -e ACCESS_TOKEN_SECRET="$ACCESS_TOKEN_SECRET" \
+            -e SQS_QUEUE_URL="$SQS_QUEUE_URL" \
             favorites-service-image
         '''
       }
