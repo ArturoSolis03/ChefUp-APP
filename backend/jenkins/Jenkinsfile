@@ -17,8 +17,6 @@ pipeline {
     MONGODB_URI_FAV = "mongodb+srv://Cheff:Admin123@cheffupapp.jezpeq5.mongodb.net/?retryWrites=true&w=majority&appName=CheffUpApp"
     PORT_FAV = "3001"
     
-    AWS_ACCESS_KEY_ID = credentials('aws-credentials')
-    AWS_SECRET_ACCESS_KEY = credentials('aws-credentials')
     AWS_REGION = "us-east-1"
     SQS_QUEUE_URL = "https://sqs.us-east-1.amazonaws.com/709699555047/favorites-events"
   }
