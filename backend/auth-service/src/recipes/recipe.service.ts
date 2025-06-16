@@ -45,7 +45,7 @@ export class RecipeService {
       sourceUrl: response.data.sourceUrl,
     };
   }
-  
+
   async getRecipeDetails(id: string, userToken: string): Promise<any> {
     if (!userToken) throw new UnauthorizedException('Missing token');
 
@@ -70,8 +70,6 @@ export class RecipeService {
       sourceUrl: data.sourceUrl,
       ingredients: data.extendedIngredients.map((i) => ({
         name: i.name,
-        original: i.original,
-        image: `https://spoonacular.com/cdn/ingredients_100x100/${i.image}`,
       })),
       instructions: data.instructions,
     };
