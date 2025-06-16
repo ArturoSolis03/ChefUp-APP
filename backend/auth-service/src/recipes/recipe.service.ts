@@ -64,10 +64,6 @@ export class RecipeService {
       id: data.id,
       title: data.title,
       image: data.image,
-      summary: data.summary,
-      readyInMinutes: data.readyInMinutes,
-      servings: data.servings,
-      sourceUrl: data.sourceUrl,
       ingredients: data.extendedIngredients.map((i) => ({
         name: i.name,
       })),
