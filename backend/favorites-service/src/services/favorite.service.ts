@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Document } from 'mongoose';
+import { SqsService } from './sqs.service';
 
 export interface Favorite {
   userId: string;
@@ -17,6 +18,7 @@ export class FavoritesService {
   constructor(
     @InjectModel('Favorite')
     private readonly favoriteModel: Model<FavoriteDocument>,
+    private readonly sqsService: SqsService,
   ) {}
 
   async addFavorite(userId: string, recipe: Omit<Favorite, 'userId'>) {
@@ -27,11 +29,28 @@ export class FavoritesService {
 
     if (exists) return exists;
 
-    return this.favoriteModel.create({ userId, ...recipe });
+    const created = await this.favoriteModel.create({ userId, ...recipe });
+
+    await this.sqsService.sendMessage({
+      event: 'favorite_added',
+      userId,
+      recipeId: recipe.recipeId,
+      title: recipe.title,
+    });
+
+    return created;
   }
 
   async removeFavorite(userId: string, recipeId: number) {
-    return this.favoriteModel.deleteOne({ userId, recipeId });
+    const deleted = await this.favoriteModel.deleteOne({ userId, recipeId });
+
+    await this.sqsService.sendMessage({
+      event: 'favorite_removed',
+      userId,
+      recipeId,
+    });
+
+    return deleted;
   }
 
   async getFavorites(userId: string) {
