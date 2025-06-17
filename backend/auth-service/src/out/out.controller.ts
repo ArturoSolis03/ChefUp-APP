@@ -50,7 +50,7 @@ export class OutController {
     return req.user;
   }
 
-  // SYNC IN: Login
+ 
   @HttpCode(HttpStatus.OK)
   @Post('signin')
   @ApiOperation({ summary: 'User login' })
@@ -64,7 +64,6 @@ export class OutController {
     return this.outService.signin(dto);
   }
 
-  // LOGOUT
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @ApiOperation({ summary: 'Logout user' })
