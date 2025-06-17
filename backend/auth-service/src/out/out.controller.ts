@@ -22,20 +22,20 @@ import {
   ApiOperation,
   ApiResponse,
 } from '@nestjs/swagger';
+import { TokensDto } from './dto/tokens.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class OutController {
   constructor(private outService: OutService) {}
 
-  // SYNC UP: Registro de usuario
   @Post('signup')
   @ApiOperation({ summary: 'Register new user' })
   @ApiBody({ type: SignUpDto })
   @ApiResponse({
     status: 201,
     description: 'User registered successfully',
-    type: Tokens,
+    type: TokensDto,
   })
   signup(@Body() dto: SignUpDto): Promise<Tokens> {
     return this.outService.signup(dto);
@@ -55,7 +55,11 @@ export class OutController {
   @Post('signin')
   @ApiOperation({ summary: 'User login' })
   @ApiBody({ type: SignInDto })
-  @ApiResponse({ status: 200, description: 'Login successful', type: Tokens })
+  @ApiResponse({
+    status: 200,
+    description: 'Login successful',
+    type: TokensDto,
+  })
   signin(@Body() dto: SignInDto): Promise<Tokens> {
     return this.outService.signin(dto);
   }
@@ -75,7 +79,11 @@ export class OutController {
   @Post('refresh')
   @ApiOperation({ summary: 'Refresh access/refresh tokens' })
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, description: 'Tokens refreshed', type: Tokens })
+  @ApiResponse({
+    status: 200,
+    description: 'Tokens refreshed',
+    type: TokensDto,
+  })
   refreshTokens(
     @GetCurrentUserId() userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
