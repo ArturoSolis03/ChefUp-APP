@@ -4,7 +4,6 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  Get,
   UseGuards,
   Req,
 } from '@nestjs/common';
@@ -16,19 +15,37 @@ import { GetCurrentUser } from 'src/auth/decorators/get-current-user.decorator';
 import { GetCurrentUserId } from 'src/auth/decorators/get-current.user-id.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
 import { RefreshTokenGuard } from 'src/auth/guards/refresh-token.guard';
+import {
+  ApiTags,
+  ApiBody,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class OutController {
   constructor(private outService: OutService) {}
 
   // SYNC UP: Registro de usuario
   @Post('signup')
+  @ApiOperation({ summary: 'Register new user' })
+  @ApiBody({ type: SignUpDto })
+  @ApiResponse({
+    status: 201,
+    description: 'User registered successfully',
+    type: Tokens,
+  })
   signup(@Body() dto: SignUpDto): Promise<Tokens> {
     return this.outService.signup(dto);
   }
 
   @Post('validate')
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Validate token' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'Token is valid' })
   async validate(@Req() req: any) {
     return req.user;
   }
@@ -36,6 +53,9 @@ export class OutController {
   // SYNC IN: Login
   @HttpCode(HttpStatus.OK)
   @Post('signin')
+  @ApiOperation({ summary: 'User login' })
+  @ApiBody({ type: SignInDto })
+  @ApiResponse({ status: 200, description: 'Login successful', type: Tokens })
   signin(@Body() dto: SignInDto): Promise<Tokens> {
     return this.outService.signin(dto);
   }
@@ -43,6 +63,9 @@ export class OutController {
   // LOGOUT
   @UseGuards(JwtAuthGuard)
   @Post('logout')
+  @ApiOperation({ summary: 'Logout user' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'User logged out' })
   logout(@GetCurrentUserId() userId: string) {
     return this.outService.logout(userId);
   }
@@ -50,6 +73,9 @@ export class OutController {
   // REFRESH TOKENS
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
+  @ApiOperation({ summary: 'Refresh access/refresh tokens' })
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, description: 'Tokens refreshed', type: Tokens })
   refreshTokens(
     @GetCurrentUserId() userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
