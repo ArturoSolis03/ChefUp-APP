@@ -11,17 +11,37 @@ import {
 import { FavoritesService } from 'src/services/favorite.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 
 @Controller('favorites')
-@UseGuards(AuthGuard('jwt')) // ← protege todo el controller
+@UseGuards(AuthGuard('jwt'))
+@ApiTags('Favorites')
+@ApiBearerAuth()
 export class FavoritesController {
   constructor(private readonly favoritesService: FavoritesService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Add a recipe to favorites' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'number' },
+        title: { type: 'string' },
+        image: { type: 'string' },
+        imageType: { type: 'string' },
+      },
+      required: ['id', 'title', 'image', 'imageType'],
+    },
+  })
   async add(@Req() req: Request, @Body() body: any) {
     const user = req.user as any;
-    console.log('USER IN CONTROLLER:', user); 
-
     const { id, title, image, imageType } = body;
 
     const recipe = {
@@ -35,12 +55,15 @@ export class FavoritesController {
   }
 
   @Delete(':recipeId')
+  @ApiOperation({ summary: 'Remove a recipe from favorites' })
+  @ApiParam({ name: 'recipeId', type: Number })
   async remove(@Req() req: Request, @Param('recipeId') recipeId: number) {
     const user = req.user as any;
     return this.favoritesService.removeFavorite(user.sub, Number(recipeId));
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all favorite recipes' })
   async getAll(@Req() req: Request) {
     const user = req.user as any;
     return this.favoritesService.getFavorites(user.sub);

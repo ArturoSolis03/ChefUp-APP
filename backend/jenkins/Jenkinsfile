@@ -76,10 +76,10 @@ pipeline {
 
   post {
     success {
-      echo "✅ Despliegue exitoso en EC2 con Docker"
+      echo "✅ Success on Docker"
     }
     failure {
-      echo "❌ Falló el despliegue en EC2"
+      echo "❌ Fail Docker"
     }
   }
 }
