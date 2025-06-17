@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Document } from 'mongoose';
 import { SqsService } from './sqs.service';
@@ -27,7 +31,9 @@ export class FavoritesService {
       recipeId: recipe.recipeId,
     });
 
-    if (exists) return exists;
+    if (exists) {
+      throw new ConflictException('Recipe already in favorites');
+    }
 
     const created = await this.favoriteModel.create({ userId, ...recipe });
 
@@ -38,11 +44,20 @@ export class FavoritesService {
       title: recipe.title,
     });
 
-    return created;
+    return {
+      id: created.recipeId,
+      title: created.title,
+      image: created.image,
+      imageType: created.imageType,
+    };
   }
 
   async removeFavorite(userId: string, recipeId: number) {
-    const deleted = await this.favoriteModel.deleteOne({ userId, recipeId });
+    const result = await this.favoriteModel.deleteOne({ userId, recipeId });
+
+    if (result.deletedCount === 0) {
+      throw new NotFoundException('Recipe not found in favorites');
+    }
 
     await this.sqsService.sendMessage({
       event: 'favorite_removed',
@@ -50,10 +65,17 @@ export class FavoritesService {
       recipeId,
     });
 
-    return deleted;
+    return { success: true };
   }
 
   async getFavorites(userId: string) {
-    return this.favoriteModel.find({ userId });
+    const favorites = await this.favoriteModel.find({ userId });
+
+    return favorites.map((fav) => ({
+      id: fav.recipeId,
+      title: fav.title,
+      image: fav.image,
+      imageType: fav.imageType,
+    }));
   }
 }
