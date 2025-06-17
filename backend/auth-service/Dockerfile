@@ -9,7 +9,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 RUN npm run build
 
-# Stage 2: producción
+# Stage 2: 
 FROM node:20-alpine
 
 WORKDIR /app

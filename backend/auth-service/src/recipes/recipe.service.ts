@@ -1,27 +1,46 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import axios from 'axios';
 
 @Injectable()
 export class RecipeService {
   private readonly apiUrl = 'https://api.spoonacular.com/recipes/complexSearch';
   private readonly apiKey = process.env.SPOONACULAR_API_KEY;
+  private readonly recipesPerPage = 8;
+  private readonly maxPages = 4;
 
-  async getRecipes(userToken: string): Promise<any[]> {
+  async getRecipes(userToken: string, page = 1): Promise<any> {
     if (!userToken) throw new UnauthorizedException('Missing token');
+    if (page < 1 || page > this.maxPages) {
+      throw new BadRequestException(
+        `Page must be between 1 and ${this.maxPages}`,
+      );
+    }
+
+    const offset = (page - 1) * this.recipesPerPage;
 
     const response = await axios.get(this.apiUrl, {
       params: {
         apiKey: this.apiKey,
-        number: 10,
+        number: this.recipesPerPage,
+        offset,
       },
     });
 
-    return response.data.results.map(recipe => ({
-      id: recipe.id,
-      title: recipe.title,
-      image: recipe.image,
-      imageType: recipe.imageType,
-    }));
+    return {
+      page,
+      totalPages: this.maxPages,
+      totalResults: response.data.totalResults,
+      results: response.data.results.map(recipe => ({
+        id: recipe.id,
+        title: recipe.title,
+        image: recipe.image,
+        imageType: recipe.imageType,
+      })),
+    };
   }
 
   async getRecipeById(id: string, userToken: string): Promise<any> {
@@ -64,7 +83,7 @@ export class RecipeService {
       id: data.id,
       title: data.title,
       image: data.image,
-      ingredients: data.extendedIngredients.map((i) => ({
+      ingredients: data.extendedIngredients?.map((i) => ({
         name: i.name,
         amount: i.amount,
         unit: i.unit,
