@@ -1,0 +1,12 @@
+<svg width="163" height="23" viewBox="0 0 163 23" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <g transform="translate(0,1)">
+    <!-- Bigger Chef Hat in gray -->
+    <path d="M5 11C3 7 9 2 14 3C17 1 22 1 24 4C29 4 33 9 32 12C36 12 37 15 34 17H6C5 15 5 13 5 11Z" fill="#cccccc" stroke="#888888" stroke-width="1"></path>
+    <rect x="8" y="16" width="20" height="5" rx="2" fill="#888888"></rect>
+
+    <!-- Text: CHEF UP in dark gray -->
+    <text font-family="Arial, sans-serif" font-size="16" fill="#444444" letter-spacing="0.5" dominant-baseline="middle" text-anchor="start" y="13" x="45" font-weight="bold">
+      CHEF UP
+    </text>
+  </g>
+</svg>
