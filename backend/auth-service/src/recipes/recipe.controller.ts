@@ -1,4 +1,11 @@
-import { Controller, Get, Headers, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { RecipeService } from './recipe.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guards';
 import {
@@ -7,6 +14,7 @@ import {
   ApiOperation,
   ApiParam,
   ApiResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 
 @ApiTags('Recipes')
@@ -17,14 +25,18 @@ export class RecipeController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  @ApiOperation({ summary: 'Get a list of recipes from Spoonacular' })
+  @ApiOperation({ summary: 'Get a paginated list of recipes from Spoonacular' })
+  @ApiQuery({ name: 'page', required: false, description: 'Page number (1 to 4)', example: 1 })
   @ApiResponse({
     status: 200,
     description: 'List of recipes returned successfully',
   })
-  getRecipes(@Headers('authorization') authHeader: string) {
+  getRecipes(
+    @Headers('authorization') authHeader: string,
+    @Query('page') page = '1',
+  ) {
     const token = authHeader?.replace('Bearer ', '');
-    return this.recipeService.getRecipes(token);
+    return this.recipeService.getRecipes(token, Number(page));
   }
 
   @UseGuards(JwtAuthGuard)
