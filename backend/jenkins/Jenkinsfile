@@ -36,6 +36,16 @@ pipeline {
       }
     }
 
+    stage('SonarQube - Auth Service') {
+      steps {
+        dir("backend/${env.PROJECT_NAME_AUTH}") {
+          withSonarQubeEnv('MySonarServer') {
+            sh 'sonar-scanner'
+          }
+        }
+      }
+    }
+
     stage('Build Favorites Service') {
       steps {
         dir("backend/${env.PROJECT_NAME_FAV}") {
@@ -44,10 +54,19 @@ pipeline {
       }
     }
 
+    stage('SonarQube - Favorites Service') {
+      steps {
+        dir("backend/${env.PROJECT_NAME_FAV}") {
+          withSonarQubeEnv('MySonarServer') {
+            sh 'sonar-scanner'
+          }
+        }
+      }
+    }
+
     stage('Run Containers') {
       steps {
         sh '''
-          # Limpiar contenedores anteriores
           docker rm -f auth-service || true
           docker rm -f favorites-service || true
 
