@@ -80,4 +80,10 @@ export class FavoritesController {
       limitNumber,
     );
   }
+  @Get('ids')
+  @ApiOperation({ summary: 'Check favorites' })
+  async getFavoriteRecipeIds(@Req() req: Request) {
+    const user = req.user as any;
+    return this.favoritesService.getAllFavoriteRecipeIds(user.sub);
+  }
 }
