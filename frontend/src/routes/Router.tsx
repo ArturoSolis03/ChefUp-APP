@@ -20,10 +20,10 @@ const RecipeDetails = lazy(() => import('../components/recipe/CardRecipeDetails'
 
 const Router = [
   {
-    // path: '/',
-    // element: <PrivateRoute />,
-    // children: [
-    //   {
+    path: '/',
+    element: <PrivateRoute />,
+    children: [
+      {
         path: '/',
         element: <FullLayout />,
         children: [
@@ -35,8 +35,8 @@ const Router = [
           { path: '*', element: <Navigate to="/auth/404" /> },
         ],
       },
-  //   ],
-  // },
+    ],
+  },
   {
     path: '/auth',
     element: <BlankLayout />,

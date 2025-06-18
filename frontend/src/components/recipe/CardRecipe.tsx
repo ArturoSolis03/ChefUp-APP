@@ -34,11 +34,12 @@ const CardRecipe: React.FC<RecipeCardProps> = ({
 
     try {
       if (isFavorite) {
-        await api.delete(`/favorites/${recipe.id}`);
+        await api(true).delete(`/favorites/${recipe.id}`);
         setAlert({ message: 'Removed from favorites.', severity: 'success' });
         onFavoriteToggle?.(); // notify parent that it was removed
       } else {
-        await api.post('/favorites', { recipeId: recipe.id });
+        const {id, title, image, imageType} = recipe;
+        await api(true).post('/favorites', { id, title, image, imageType });
         setAlert({ message: 'Added to favorites!', severity: 'success' });
       }
 

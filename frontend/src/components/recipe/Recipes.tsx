@@ -15,8 +15,6 @@ import {
 import CardRecipe from './CardRecipe';
 import { fetchRecipes } from '../shared/api';
 
-const LIMIT = 9;
-
 interface RecipesProps {
   title?: string;
   endpoint: 'recipes' | 'favorites';
@@ -39,14 +37,15 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
     setIsLoading(true);
     setAlert(null);
     try {
-      const res = await fetchRecipes(endpoint, searchQuery, pageQuery, LIMIT);
-      setRecipes(res.results);
-      setTotal(res.totalPages);
-
-      if (res.results.length === 0) {
-        setAlert({ message: 'No recipes found.', severity: 'error' });
+      const res = await fetchRecipes(endpoint, searchQuery, pageQuery);
+      if(endpoint == 'favorites'){
+        setRecipes(res);
+      }else {
+        setRecipes(res.results);
+        setTotal(res.totalPages);
       }
-    } catch {
+    } catch(error) {
+      console.error(error);
       setAlert({ message: 'An error occurred while fetching recipes.', severity: 'error' });
     } finally {
       setIsLoading(false);
@@ -55,7 +54,7 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
 
   useEffect(() => {
     loadData();
-  }, [searchQuery, pageQuery]);
+  }, [endpoint, searchQuery, pageQuery]);
 
   const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
     searchParams.set('page', newPage.toString());
@@ -89,15 +88,22 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
 
         {isLoading ? (
           <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>
+        ) : recipes.length === 0 ? (
+          <Box display="flex" justifyContent="center" mt={4}>
+            <Typography variant="body1" color="text.secondary">
+              No recipes available to display.
+            </Typography>
+          </Box>
         ) : (
           <>
             <Box display="flex" flexWrap="wrap" gap={2} justifyContent="space-around">
               {recipes.map((recipe) => (
-                <CardRecipe key={recipe.id} recipe={recipe} onFavoriteToggle={() => handleFavoriteToggle(recipe.id)} isFavoriteProp={recipe.isFavorite ?? false} />
+                <CardRecipe key={recipe.id} recipe={recipe} onFavoriteToggle={() => handleFavoriteToggle(recipe.id)} isFavoriteProp={recipe.isFavorite ?? true} />
               ))}
             </Box>
-
-            <Box display="flex" justifyContent="center" mt={4}>
+            
+            {recipes.length > 1 &&
+            (<Box display="flex" justifyContent="center" mt={4}>
               <Pagination
                 count={total}
                 page={pageQuery}
@@ -105,7 +111,7 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
                 color="primary"
                 shape="rounded"
               />
-            </Box>
+            </Box>)}
           </>
         )}
       </CardContent>

@@ -50,7 +50,7 @@ export const refreshToken = async (): Promise<string | null> => {
   }
 
   try {
-    const response = await api.post('/auth/refresh', null, {
+    const response = await api().post('/auth/refresh', null, {
       headers: {
         Authorization: `Bearer ${refresh}`,
       },
@@ -68,7 +68,7 @@ export const refreshToken = async (): Promise<string | null> => {
 
 // === Auth Actions ===
 export const login = async (email: string, password: string): Promise<void> => {
-  const response = await api.post('/auth/signin', { email, password });
+  const response = await api().post('/auth/signin', { email, password });
   const { accessToken, refreshToken } = response.data;
   saveTokens(accessToken, refreshToken);
 };
@@ -82,7 +82,7 @@ export const register = async (userData: {
   password: string;
   [key: string]: any;
 }): Promise<void> => {
-  const response = await api.post('/auth/signup', userData);
+  const response = await api().post('/auth/signup', userData);
   const { accessToken, refreshToken } = response.data;
   saveTokens(accessToken, refreshToken);
 };
