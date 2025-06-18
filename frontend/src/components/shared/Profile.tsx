@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -6,11 +6,48 @@ import {
   Box,
   Avatar,
   Stack,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import CustomTextField from 'src/components/shared/CustomTextField';
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
+import api from './api';
 
 const UserProfile: React.FC = () => {
+  const [userData, setUserData] = useState({
+    name: '',
+    email: ''
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await api().post('/auth/validate');
+        setUserData({
+          name: response.data.name,
+          email: response.data.email
+        });
+      } catch (err) {
+        console.error('Error validating user:', err);
+        setError('Error retrieving user data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" mt={8}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   return (
     <Card
       sx={{
@@ -24,17 +61,23 @@ const UserProfile: React.FC = () => {
       <CardContent>
         <Stack spacing={4} alignItems="center" mb={4}>
           <Avatar
-          src={ProfileImg}
-          alt={'ProfileImg'}
-          sx={{
-            width: 96,
-            height: 96,
-          }}
+            src={ProfileImg}
+            alt="ProfileImg"
+            sx={{
+              width: 96,
+              height: 96,
+            }}
           />
           <Typography variant="h4" fontWeight={600}>
             User Profile
           </Typography>
         </Stack>
+
+        {error && (
+          <Alert severity="error" sx={{ mb: 3, width: '100%' }}>
+            {error}
+          </Alert>
+        )}
 
         <Box component="form" noValidate autoComplete="off" sx={{ width: '100%' }}>
           <Stack spacing={3}>
@@ -50,7 +93,7 @@ const UserProfile: React.FC = () => {
               </Typography>
               <CustomTextField
                 id="name"
-                value="Name Example"
+                value={userData.name}
                 fullWidth
                 InputProps={{
                   readOnly: true,
@@ -70,29 +113,8 @@ const UserProfile: React.FC = () => {
               </Typography>
               <CustomTextField
                 id="email"
-                value="youremail@gmail.com"
+                value={userData.email}
                 type="email"
-                fullWidth
-                InputProps={{
-                  readOnly: true,
-                }}
-              />
-            </Box>
-
-            <Box>
-              <Typography
-                variant="subtitle2"
-                color="textSecondary"
-                mb={1}
-                component="label"
-                htmlFor="password"
-              >
-                Password
-              </Typography>
-              <CustomTextField
-                id="password"
-                value={"password".replace(/./g, '•')}
-                type="password"
                 fullWidth
                 InputProps={{
                   readOnly: true,

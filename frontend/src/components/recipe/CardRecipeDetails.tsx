@@ -14,17 +14,10 @@ import {
 import { useState, useEffect, MouseEvent } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-// import api from '../services/api';
+import api from '../shared/api';
 import { useParams } from 'react-router-dom';
-
-interface Recipe {
-  id: string;
-  name: string;
-  image: string;
-  ingredients: string[];
-  instructions: string;
-  isFavorite?: boolean;
-}
+import parse from 'html-react-parser';
+import { Recipe } from './recipe';
 
 const CardRecipeDetails = () => {
   const { id } = useParams<{ id: string }>();
@@ -35,17 +28,7 @@ const CardRecipeDetails = () => {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        // const res = await api.get(`/recipes/${id}`);
-        const res = {
-            data: {
-            id: "4n3kr3emrfelmfe",
-            name: "Test 1",
-            image: "https://img.spoonacular.com/recipes/716406-312x231.jpg",
-            ingredients: ["ingredient 1", "ingredient 2","ingredient 3"],
-            instructions: "Lorem insup djngfgh dgfhhsgs errrgrg rht h dg eg r wrh tg r gsgshte htr hrhthth",
-            isFavorite: true
-            }
-        }
+        const res = await api().get(`/recipes/${id}`);
         setRecipe(res.data);
         setFavorite(res.data.isFavorite || false);
       } catch (err) {
@@ -64,9 +47,10 @@ const CardRecipeDetails = () => {
 
     try {
       if (favorite) {
-        // await api.delete(`/favorites/${recipe.id}`);
+        await api(true).delete(`/favorites/${recipe.id}`);
       } else {
-        // await api.post('/favorites', { recipeId: recipe.id });
+        const {id, title, image, imageType} = recipe;
+        await api(true).post('/favorites', { id, title, image, imageType });
       }
       setFavorite(!favorite);
     } catch (err) {
@@ -86,7 +70,7 @@ const CardRecipeDetails = () => {
     return (
       <Box display="flex" justifyContent="center" mt={6}>
         <Typography variant="h6" color="error">
-          Receta no encontrada
+          Recipe not found
         </Typography>
       </Box>
     );
@@ -99,7 +83,7 @@ const CardRecipeDetails = () => {
           component="img"
           height="350"
           image={recipe.image}
-          alt={recipe.name}
+          alt={recipe.title}
           sx={{ objectFit: 'cover' }}
         />
         <IconButton
@@ -117,18 +101,18 @@ const CardRecipeDetails = () => {
 
       <CardContent>
         <Typography variant="h4" fontWeight="bold" gutterBottom>
-          {recipe.name}
+          {recipe.title}
         </Typography>
 
         <Divider sx={{ my: 2 }} />
 
         <Typography variant="h6" gutterBottom>
-          Ingredientes
+          Ingredients
         </Typography>
         <List dense>
-          {recipe.ingredients.map((ingredient, index) => (
+          {recipe.ingredients?.map((ingredient, index) => (
             <ListItem key={index} disablePadding>
-              <ListItemText primary={`• ${ingredient}`} />
+              <ListItemText primary={`• ${ingredient.amount} ${ingredient.unit} ${ingredient.name}`} />
             </ListItem>
           ))}
         </List>
@@ -136,10 +120,10 @@ const CardRecipeDetails = () => {
         <Divider sx={{ my: 2 }} />
 
         <Typography variant="h6" gutterBottom>
-          Preparación
+          Instructions
         </Typography>
-        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }}>
-          {recipe.instructions}
+        <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }} >
+          {parse(recipe.instructions ?? "No instructions founded")}
         </Typography>
       </CardContent>
     </Card>
