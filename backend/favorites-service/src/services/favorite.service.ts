@@ -92,4 +92,13 @@ export class FavoritesService {
       })),
     };
   }
+
+  async getAllFavoriteRecipeIds(userId: string): Promise<number[]> {
+    const favorites = await this.favoriteModel
+      .find({ userId })
+      .select('recipeId -_id')
+      .lean();
+  
+    return favorites.map(fav => fav.recipeId);
+  }
 }

@@ -12,6 +12,25 @@ export class RecipeService {
   private readonly recipesPerPage = 8;
   private readonly maxPages = 4;
 
+  private readonly favoritesServiceUrl = 'http://3.91.55.17:3001';
+
+  private async getUserFavoriteIds(userToken: string): Promise<number[]> {
+    try {
+      const response = await axios.get(
+        `${this.favoritesServiceUrl}/favorites/ids`,
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Error consultando favoritos:', error.message);
+      return [];
+    }
+  }
+
   async getRecipes(userToken: string, page = 1, search = ''): Promise<any> {
     if (!userToken) throw new UnauthorizedException('Missing token');
     if (page < 1 || page > this.maxPages) {
@@ -31,16 +50,23 @@ export class RecipeService {
       },
     });
 
+    const recipes = response.data.results;
+
+    const favoriteIdsSet = new Set(await this.getUserFavoriteIds(userToken));
+
+    const results = recipes.map((recipe) => ({
+      id: recipe.id,
+      title: recipe.title,
+      image: recipe.image,
+      imageType: recipe.imageType,
+      isFavorite: favoriteIdsSet.has(recipe.id),
+    }));
+
     return {
       page,
       totalPages: this.maxPages,
       totalResults: response.data.totalResults,
-      results: response.data.results.map((recipe) => ({
-        id: recipe.id,
-        title: recipe.title,
-        image: recipe.image,
-        imageType: recipe.imageType,
-      })),
+      results,
     };
   }
 
