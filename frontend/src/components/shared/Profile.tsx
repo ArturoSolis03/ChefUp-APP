@@ -7,7 +7,7 @@ import {
   Avatar,
   Stack,
 } from '@mui/material';
-import CustomTextField from 'src/components/forms/theme-elements/CustomTextField';
+import CustomTextField from 'src/components/shared/CustomTextField';
 import ProfileImg from 'src/assets/images/profile/user-1.jpg';
 
 const UserProfile: React.FC = () => {

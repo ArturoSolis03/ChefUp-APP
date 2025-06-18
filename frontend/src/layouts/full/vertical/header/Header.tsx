@@ -13,13 +13,22 @@ import Logo from '../../shared/logo/Logo';
 import { useEffect, useState, useContext } from 'react';
 import { Icon } from '@iconify/react';
 import { DashboardContext } from 'src/context/DashboardContext';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
+import SearchBar from 'src/components/shared/SearchBar';
 
 const Header = () => {
   const [_height, setHeight] = useState('0px');
   const lgUp = useMediaQuery((theme: any) => theme.breakpoints.up('lg'));
 
   const toggleWidth = '160px';
+
+  const navigate = useNavigate();
+
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      navigate(`/recipes?search=${encodeURIComponent(query.trim())}`);
+    }
+  };
 
   const AppBarStyled = styled(AppBar)(({ theme }) => ({
     boxShadow: 'none !important',
@@ -122,14 +131,26 @@ const Header = () => {
           {lgUp ? (
             <>
               <Stack spacing={2} direction="row" alignItems="center">
-                <Profile />
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                  {/* Centro o derecha: el buscador */}
+                  <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                    <SearchBar onSearch={handleSearch} isLoading={false}  />
+                  </Box>
+                  <Profile />
+                </Toolbar>
               </Stack>
             </>
           ) : null}
           {lgUp ? null : (
             <>
               <Stack spacing={2} direction="row" alignItems="center">
-                <Profile />
+                <Toolbar sx={{ justifyContent: 'space-between' }}>
+                  {/* Centro o derecha: el buscador */}
+                  <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
+                    <SearchBar onSearch={handleSearch} isLoading={false}  />
+                  </Box>
+                  <Profile />
+                </Toolbar>
               </Stack>
             </>
           )}
