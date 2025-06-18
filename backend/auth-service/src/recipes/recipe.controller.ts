@@ -26,7 +26,18 @@ export class RecipeController {
   @UseGuards(JwtAuthGuard)
   @Get()
   @ApiOperation({ summary: 'Get a paginated list of recipes from Spoonacular' })
-  @ApiQuery({ name: 'page', required: false, description: 'Page number (1 to 4)', example: 1 })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number (1 to 4)',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'Filter recipes by name',
+    example: 'chicken',
+  })
   @ApiResponse({
     status: 200,
     description: 'List of recipes returned successfully',
@@ -34,9 +45,10 @@ export class RecipeController {
   getRecipes(
     @Headers('authorization') authHeader: string,
     @Query('page') page = '1',
+    @Query('search') search = '',
   ) {
     const token = authHeader?.replace('Bearer ', '');
-    return this.recipeService.getRecipes(token, Number(page));
+    return this.recipeService.getRecipes(token, Number(page), search);
   }
 
   @UseGuards(JwtAuthGuard)

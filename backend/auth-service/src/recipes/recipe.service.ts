@@ -12,7 +12,7 @@ export class RecipeService {
   private readonly recipesPerPage = 8;
   private readonly maxPages = 4;
 
-  async getRecipes(userToken: string, page = 1): Promise<any> {
+  async getRecipes(userToken: string, page = 1, search = ''): Promise<any> {
     if (!userToken) throw new UnauthorizedException('Missing token');
     if (page < 1 || page > this.maxPages) {
       throw new BadRequestException(
@@ -27,6 +27,7 @@ export class RecipeService {
         apiKey: this.apiKey,
         number: this.recipesPerPage,
         offset,
+        query: search,
       },
     });
 
@@ -34,7 +35,7 @@ export class RecipeService {
       page,
       totalPages: this.maxPages,
       totalResults: response.data.totalResults,
-      results: response.data.results.map(recipe => ({
+      results: response.data.results.map((recipe) => ({
         id: recipe.id,
         title: recipe.title,
         image: recipe.image,
