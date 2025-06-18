@@ -18,6 +18,7 @@ import {
   ApiBody,
   ApiParam,
 } from '@nestjs/swagger';
+import { Query } from '@nestjs/common';
 
 @Controller('favorites')
 @UseGuards(AuthGuard('jwt'))
@@ -63,9 +64,20 @@ export class FavoritesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all favorite recipes' })
-  async getAll(@Req() req: Request) {
+  @ApiOperation({ summary: 'Get all favorite recipes (paginated)' })
+  async getAll(
+    @Req() req: Request,
+    @Query('page') page = '1',
+    @Query('limit') limit = '8',
+  ) {
     const user = req.user as any;
-    return this.favoritesService.getFavorites(user.sub);
+    const pageNumber = parseInt(page, 10) || 1;
+    const limitNumber = parseInt(limit, 10) || 8;
+
+    return this.favoritesService.getFavorites(
+      user.sub,
+      pageNumber,
+      limitNumber,
+    );
   }
 }

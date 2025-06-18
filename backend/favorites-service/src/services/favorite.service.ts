@@ -68,14 +68,28 @@ export class FavoritesService {
     return { success: true };
   }
 
-  async getFavorites(userId: string) {
-    const favorites = await this.favoriteModel.find({ userId });
+  async getFavorites(userId: string, page = 1, limit = 8) {
+    const skip = (page - 1) * limit;
 
-    return favorites.map((fav) => ({
-      id: fav.recipeId,
-      title: fav.title,
-      image: fav.image,
-      imageType: fav.imageType,
-    }));
+    const favorites = await this.favoriteModel
+      .find({ userId })
+      .skip(skip)
+      .limit(limit)
+      .exec();
+
+    const total = await this.favoriteModel.countDocuments({ userId });
+
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      data: favorites.map((fav) => ({
+        id: fav.recipeId,
+        title: fav.title,
+        image: fav.image,
+        imageType: fav.imageType,
+      })),
+    };
   }
 }
