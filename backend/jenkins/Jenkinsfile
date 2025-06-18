@@ -37,15 +37,17 @@ pipeline {
     }
 
     stage('SonarQube - Auth Service') {
-      steps {
-        dir("backend/${env.PROJECT_NAME_AUTH}") {
-          withSonarQubeEnv('SonarQube') {
-            tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            sh 'sonar-scanner'
-          }
+        steps {
+            dir("backend/${env.PROJECT_NAME_AUTH}") {
+                withSonarQubeEnv('SonarQube') {
+            script {
+                def scannerHome = tool 'SonarScanner'
+                sh "${scannerHome}/bin/sonar-scanner"
         }
       }
     }
+  }
+}
 
     stage('Build Favorites Service') {
       steps {
@@ -55,16 +57,18 @@ pipeline {
       }
     }
 
-    stage('SonarQube - Favorites Service') {
-      steps {
-        dir("backend/${env.PROJECT_NAME_FAV}") {
-          withSonarQubeEnv('SonarQube') {
-            tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
-            sh 'sonar-scanner'
-          }
+     stage('SonarQube - Favorites Service') {
+        steps {
+            dir("backend/${env.PROJECT_NAME_FAV}") {
+                withSonarQubeEnv('SonarQube') {
+            script {
+                def scannerHome = tool 'SonarScanner'
+                sh "${scannerHome}/bin/sonar-scanner"
         }
       }
     }
+  }
+}
 
     stage('Run Containers') {
       steps {
