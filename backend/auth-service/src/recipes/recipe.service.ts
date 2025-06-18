@@ -106,6 +106,9 @@ export class RecipeService {
 
     const data = response.data;
 
+    const favoriteIds = await this.getUserFavoriteIds(userToken);
+    const isFavorite = favoriteIds.includes(data.id);
+
     return {
       id: data.id,
       title: data.title,
@@ -116,6 +119,7 @@ export class RecipeService {
         unit: i.unit,
       })),
       instructions: data.instructions,
+      isFavorite,
     };
   }
 }
