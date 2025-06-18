@@ -39,7 +39,7 @@ pipeline {
     stage('SonarQube - Auth Service') {
       steps {
         dir("backend/${env.PROJECT_NAME_AUTH}") {
-          withSonarQubeEnv('MySonarServer') {
+          withSonarQubeEnv('SonarQube') {
             sh 'sonar-scanner'
           }
         }
@@ -57,7 +57,7 @@ pipeline {
     stage('SonarQube - Favorites Service') {
       steps {
         dir("backend/${env.PROJECT_NAME_FAV}") {
-          withSonarQubeEnv('MySonarServer') {
+          withSonarQubeEnv('SonarQube') {
             sh 'sonar-scanner'
           }
         }
