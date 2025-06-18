@@ -4,64 +4,81 @@ import {
   CardMedia,
   IconButton,
   Typography,
-  Box
+  Box,
+  Alert,
+  Snackbar,
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { useNavigate } from 'react-router-dom';
+import api from '../shared/api';
 import { Recipe } from './recipe';
-import { useNavigate } from 'react-router';
 
 interface RecipeCardProps {
   recipe: Recipe;
   isFavoriteProp: boolean;
+  onFavoriteToggle?: () => void; // callback to notify parent
 }
 
-const CardRecipe = ({ recipe, isFavoriteProp = false }: RecipeCardProps) => {
+const CardRecipe: React.FC<RecipeCardProps> = ({
+  recipe,
+  isFavoriteProp,
+  onFavoriteToggle,
+}) => {
   const navigate = useNavigate();
-
   const [isFavorite, setIsFavorite] = useState(isFavoriteProp);
+  const [alert, setAlert] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
 
   const handleToggleFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+
     try {
       if (isFavorite) {
-        // await api.delete(`/favorites/${recipe.id}`);
+        await api.delete(`/favorites/${recipe.id}`);
+        setAlert({ message: 'Removed from favorites.', severity: 'success' });
+        onFavoriteToggle?.(); // notify parent that it was removed
       } else {
-        // await api.post('/favorites', { recipeId: recipe.id });
+        await api.post('/favorites', { recipeId: recipe.id });
+        setAlert({ message: 'Added to favorites!', severity: 'success' });
       }
-      setIsFavorite(!isFavorite);
+
+      setIsFavorite(prev => !prev);
     } catch (err) {
-      console.error('Error updating favorites:', err);
+      console.error('Error updating favorite:', err);
+      setAlert({ message: 'Failed to update favorite.', severity: 'error' });
     }
   };
-const handleCardClick = () => {
+
+  const handleCardClick = () => {
     navigate(`/recipe/${recipe.id}`);
   };
 
   return (
+    <>
     <Card
       sx={{
-        maxWidth: 250,
+        maxWidth: 300,
         position: 'relative',
         borderRadius: 2,
         overflow: 'hidden',
         boxShadow: 3,
         cursor: 'pointer',
+        transition: '0.3s ease-in-out',
         ':hover': { boxShadow: 6 },
-        transition: '0.3s',
       }}
       onClick={handleCardClick}
     >
+      {/* Favorite Button */}
       <IconButton
         onClick={handleToggleFavorite}
         sx={{
           position: 'absolute',
           top: 8,
           right: 8,
-          backgroundColor: 'rgba(255,255,255,0.75)',
+          backgroundColor: 'rgba(255,255,255,0.85)',
           zIndex: 2,
         }}
-        aria-label="Agregar a favoritos"
+        aria-label="Add to favorites"
       >
         {isFavorite ? (
           <FavoriteIcon color="error" />
@@ -70,14 +87,16 @@ const handleCardClick = () => {
         )}
       </IconButton>
 
+      {/* Image */}
       <CardMedia
         component="img"
         height="200"
         image={recipe.image}
-        alt={recipe.name}
+        alt={recipe.title}
         sx={{ objectFit: 'cover' }}
       />
 
+      {/* Title Overlay */}
       <Box
         sx={{
           position: 'absolute',
@@ -85,15 +104,39 @@ const handleCardClick = () => {
           width: '100%',
           bgcolor: 'rgba(0,0,0,0.6)',
           color: 'white',
-          p: 1.5,
+          py: 1,
+          px: 2,
           textAlign: 'center',
         }}
       >
-        <Typography variant="subtitle1" fontWeight="bold" noWrap>
-          {recipe.name}
+        <Typography
+          variant="subtitle1"
+          fontWeight="bold"
+          noWrap
+          title={recipe.title}
+        >
+          {recipe.title}
         </Typography>
       </Box>
     </Card>
+    {/* Snackbar Alert */}
+      {alert && (
+        <Snackbar
+          open
+          autoHideDuration={4000}
+          onClose={() => setAlert(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        >
+          <Alert
+            severity={alert.severity}
+            variant="filled"
+            onClose={() => setAlert(null)}
+          >
+            {alert.message}
+          </Alert>
+        </Snackbar>
+      )}
+    </>
   );
 };
 
