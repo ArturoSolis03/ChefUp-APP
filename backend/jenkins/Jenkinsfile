@@ -40,6 +40,7 @@ pipeline {
       steps {
         dir("backend/${env.PROJECT_NAME_AUTH}") {
           withSonarQubeEnv('SonarQube') {
+            tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
             sh 'sonar-scanner'
           }
         }
@@ -58,6 +59,7 @@ pipeline {
       steps {
         dir("backend/${env.PROJECT_NAME_FAV}") {
           withSonarQubeEnv('SonarQube') {
+            tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
             sh 'sonar-scanner'
           }
         }
