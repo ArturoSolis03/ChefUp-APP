@@ -57,7 +57,7 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint }) => {
     loadData();
   }, [endpoint, searchQuery, pageQuery]);
 
-  const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
+  const handlePageChange = (_event: React.ChangeEvent<unknown>, newPage: number) => {
     searchParams.set('page', newPage.toString());
     navigate(`/${endpoint}?${searchParams.toString()}`);
   };

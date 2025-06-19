@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { styled, Container, Box, useTheme } from '@mui/material';
+import { styled, Container, Box } from '@mui/material';
 import { Outlet } from 'react-router';
 // import Header from './vertical/header/Header';
 import Sidebar from './vertical/sidebar/Sidebar';
@@ -17,7 +17,6 @@ const PageWrapper = styled('div')(() => ({
 }));
 
 const FullLayout: FC = () => {
-  const theme = useTheme();
 
   return (
     <>
