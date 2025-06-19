@@ -24,7 +24,7 @@ pipeline {
   stages {
     stage('Clonar Repositorio') {
       steps {
-        git branch: 'backend', url: 'https://github.com/ArturoSolis03/ChefUp-APP.git'
+        git branch: 'main', url: 'https://github.com/ArturoSolis03/ChefUp-APP.git'
       }
     }
 
