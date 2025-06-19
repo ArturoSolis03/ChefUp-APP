@@ -11,7 +11,7 @@ pipeline {
     ACCESS_TOKEN_EXPIRATION = "1h"
     REFRESH_TOKEN_SECRET = "admin2"
     REFRESH_TOKEN_EXPIRATION = "7d"
-    SPOONACULAR_API_KEY = "01152f58845a469695370ef13173f5b2"
+    SPOONACULAR_API_KEY = "b4307bf34a654e5dbcd316ecc19da8ae"
 
     // FAVORITES SERVICE ENV VARS
     MONGODB_URI_FAV = "mongodb+srv://Cheff:Admin123@cheffupapp.jezpeq5.mongodb.net/?retryWrites=true&w=majority&appName=CheffUpApp"
