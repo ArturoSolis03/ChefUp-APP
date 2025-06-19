@@ -10,6 +10,7 @@ import {
   ListItem,
   ListItemText,
   CircularProgress,
+  CardHeader,
 } from '@mui/material';
 import { useState, useEffect, MouseEvent } from 'react';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -24,13 +25,16 @@ const CardRecipeDetails = () => {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [favorite, setFavorite] = useState<boolean>(false);
+  const fallbackImage = '/images/default-recipe.jpeg';
+  const [imageSrc, setImageSrc] = useState('');
 
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
         const res = await api().get(`/recipes/${id}`);
         setRecipe(res.data);
-        setFavorite(res.data.isFavorite || false);
+        setImageSrc(res.data.image)
+        setFavorite(res.data.isFavorite);
       } catch (err) {
         console.error('Error loading recipe:', err);
       } finally {
@@ -68,11 +72,21 @@ const CardRecipeDetails = () => {
 
   if (!recipe) {
     return (
-      <Box display="flex" justifyContent="center" mt={6}>
-        <Typography variant="h6" color="error">
-          Recipe not found
-        </Typography>
-      </Box>
+      <Card sx={{ p: 2 }}>
+        <CardHeader
+          title={<Typography variant="h5">Recipe Details</Typography>}
+        />
+
+        <Divider />
+
+        <CardContent>
+          <Box display="flex" justifyContent="center" mt={4}>
+              <Typography variant="body1" color="text.secondary">
+                Recipe not found.
+              </Typography>
+          </Box>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -82,9 +96,10 @@ const CardRecipeDetails = () => {
         <CardMedia
           component="img"
           height="350"
-          image={recipe.image}
+          image={imageSrc}
           alt={recipe.title}
           sx={{ objectFit: 'cover' }}
+          onError={() => setImageSrc(fallbackImage)}
         />
         <IconButton
           onClick={handleToggleFavorite}
@@ -123,7 +138,7 @@ const CardRecipeDetails = () => {
           Instructions
         </Typography>
         <Typography variant="body1" sx={{ whiteSpace: 'pre-line' }} >
-          {parse(recipe.instructions ?? "No instructions founded")}
+          {parse(recipe.instructions ?? "No instructions found.")}
         </Typography>
       </CardContent>
     </Card>

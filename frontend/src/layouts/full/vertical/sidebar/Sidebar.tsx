@@ -1,12 +1,21 @@
 import { Box, Drawer } from "@mui/material";
 import AuthLogo from "../../shared/logo/AuthLogo";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import SidebarItems from "./SidebarItems";
 import { DashboardContext } from "src/context/DashboardContext";
 import { Profile } from "./SidebarProfile/Profile";
+import { useLocation } from "react-router";
 
 const Sidebar = () => {
+  const location = useLocation();
   const {isMobileSidebar , setIsMobileSidebar} = useContext(DashboardContext);
+
+  useEffect(() => {
+    if (isMobileSidebar) {
+      setIsMobileSidebar(false);
+    }
+  }, [location.pathname]);
+  
   return (
     <>
         <Drawer

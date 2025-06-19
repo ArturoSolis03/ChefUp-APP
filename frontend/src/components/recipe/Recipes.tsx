@@ -12,6 +12,7 @@ import {
   CardContent,
   Divider,
 } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 import CardRecipe from './CardRecipe';
 import { fetchRecipes } from '../shared/api';
 
@@ -21,7 +22,7 @@ interface RecipesProps {
   isFavoritesView?: boolean;
 }
 
-const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = false }) => {
+const Recipes: React.FC<RecipesProps> = ({ title, endpoint }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [recipes, setRecipes] = useState<any[]>([]);
@@ -39,11 +40,11 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
     try {
       const res = await fetchRecipes(endpoint, searchQuery, pageQuery);
       if(endpoint == 'favorites'){
-        setRecipes(res);
+        setRecipes(res.data);
       }else {
         setRecipes(res.results);
-        setTotal(res.totalPages);
       }
+      setTotal(res.totalPages);
     } catch(error) {
       console.error(error);
       setAlert({ message: 'An error occurred while fetching recipes.', severity: 'error' });
@@ -62,7 +63,7 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
   };
 
   const handleFavoriteToggle = (id: string) => {
-    if (isFavoritesView) {
+    if (endpoint == 'favorites') {
       setRecipes(prev => prev.filter(r => r.id !== id));
     }
   };
@@ -91,18 +92,27 @@ const Recipes: React.FC<RecipesProps> = ({ title, endpoint, isFavoritesView = fa
         ) : recipes.length === 0 ? (
           <Box display="flex" justifyContent="center" mt={4}>
             <Typography variant="body1" color="text.secondary">
-              No recipes available to display.
+              No recipes found.
             </Typography>
           </Box>
         ) : (
           <>
             <Box display="flex" flexWrap="wrap" gap={2} justifyContent="space-around">
-              {recipes.map((recipe) => (
-                <CardRecipe key={recipe.id} recipe={recipe} onFavoriteToggle={() => handleFavoriteToggle(recipe.id)} isFavoriteProp={recipe.isFavorite ?? true} />
-              ))}
+              <AnimatePresence>
+                {recipes.map((recipe) => (
+                  <motion.div
+                    key={recipe.id}
+                    initial={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.3 } }}
+                    layout
+                    >
+                      <CardRecipe key={recipe.id} recipe={recipe} onFavoriteToggle={() => handleFavoriteToggle(recipe.id)} isFavoriteProp={recipe.isFavorite ?? true} endpoint={endpoint} />
+                    </motion.div>
+                ))}
+              </AnimatePresence>
             </Box>
             
-            {recipes.length > 1 &&
+            {total > 1 &&
             (<Box display="flex" justifyContent="center" mt={4}>
               <Pagination
                 count={total}

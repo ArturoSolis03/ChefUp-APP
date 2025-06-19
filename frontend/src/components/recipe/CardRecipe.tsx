@@ -18,16 +18,20 @@ interface RecipeCardProps {
   recipe: Recipe;
   isFavoriteProp: boolean;
   onFavoriteToggle?: () => void; // callback to notify parent
+  endpoint: 'recipes' | 'favorites';
 }
 
 const CardRecipe: React.FC<RecipeCardProps> = ({
   recipe,
   isFavoriteProp,
   onFavoriteToggle,
+  endpoint
 }) => {
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(isFavoriteProp);
   const [alert, setAlert] = useState<{ message: string; severity: 'success' | 'error' } | null>(null);
+  const fallbackImage = '/images/default-recipe.jpeg';
+  const [imageSrc, setImageSrc] = useState(recipe.image);
 
   const handleToggleFavorite = async (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -35,8 +39,11 @@ const CardRecipe: React.FC<RecipeCardProps> = ({
     try {
       if (isFavorite) {
         await api(true).delete(`/favorites/${recipe.id}`);
-        setAlert({ message: 'Removed from favorites.', severity: 'success' });
-        onFavoriteToggle?.(); // notify parent that it was removed
+        if (endpoint == 'favorites'){
+          onFavoriteToggle?.(); // notify parent that it was removed
+        }else {
+          setAlert({ message: 'Removed from favorites.', severity: 'success' });
+        }
       } else {
         const {id, title, image, imageType} = recipe;
         await api(true).post('/favorites', { id, title, image, imageType });
@@ -92,9 +99,10 @@ const CardRecipe: React.FC<RecipeCardProps> = ({
       <CardMedia
         component="img"
         height="200"
-        image={recipe.image}
+        image={imageSrc}
         alt={recipe.title}
         sx={{ objectFit: 'cover' }}
+        onError={() => setImageSrc(fallbackImage)}
       />
 
       {/* Title Overlay */}

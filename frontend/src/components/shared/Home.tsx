@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Container,
   Button,
   Card,
   CardContent,
@@ -15,20 +14,11 @@ const imageUrl =
 
 const Home: React.FC = () => {
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 4,
-      }}
-    >
-      <Container maxWidth="md">
-        <Card
+      <Card sx={{ p: 2 }}>
+        <Box
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', md: 'row' },
-            boxShadow: 6,
             borderRadius: 3,
             overflow: 'hidden',
           }}
@@ -42,6 +32,7 @@ const Home: React.FC = () => {
               width: { xs: '100%', md: '50%' },
               height: { xs: 260, md: 'auto' },
               objectFit: 'cover',
+              borderRadius: 2,
             }}
           />
 
@@ -67,8 +58,7 @@ const Home: React.FC = () => {
             >
               Chef Up is your culinary companion for discovering and organizing your favorite recipes.
               Whether you're a beginner or a seasoned home chef, explore hundreds of delicious, step-by-step
-              recipes curated from around the world. Save your favorites, build your personal cookbook,
-              and get inspired to cook something new every day.
+              recipes curated from around the world.
             </Typography>
 
             <Box>
@@ -77,9 +67,8 @@ const Home: React.FC = () => {
               </Button>
             </Box>
           </CardContent>
-        </Card>
-      </Container>
-    </Box>
+        </Box>
+      </Card>
   );
 };
 

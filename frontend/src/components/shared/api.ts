@@ -6,8 +6,9 @@ import {
   clearTokens,
   isTokenValid,
 } from '../auth/auth';
-import { RecipesData } from '../recipe/recipe';
-const IP = '3.91.55.17'
+
+const IP = '18.234.61.98';
+
 const api = (forFavorites: boolean = false) => {
   const baseURL = forFavorites
     ? `http://${IP}:3001`
@@ -57,8 +58,6 @@ export const fetchRecipes = async (
   params.append('page', page.toString());
 
   const response = await api(endpoint == 'favorites').get(`/${endpoint}?${params.toString()}`);
-  // const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-  // await sleep(1000);
   
   return response.data;
 };
