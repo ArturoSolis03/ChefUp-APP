@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -6,14 +6,28 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Snackbar,
+  Alert,
 } from '@mui/material';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
 
 const imageUrl =
   'https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=800&q=80';
 
 const Home: React.FC = () => {
+  const location = useLocation();
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (location.state?.success) {
+      setSuccessMsg(location.state.success);
+      // Limpia el estado después para evitar que se repita si el usuario refresca
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
+  
   return (
+    <>
       <Card sx={{ p: 2 }}>
         <Box
           sx={{
@@ -69,6 +83,18 @@ const Home: React.FC = () => {
           </CardContent>
         </Box>
       </Card>
+
+      <Snackbar
+        open={!!successMsg}
+        autoHideDuration={4000}
+        onClose={() => setSuccessMsg(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert severity="success" variant="filled" onClose={() => setSuccessMsg(null)}>
+          {successMsg}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

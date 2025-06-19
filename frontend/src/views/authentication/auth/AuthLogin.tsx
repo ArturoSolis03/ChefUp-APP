@@ -66,11 +66,7 @@ const AuthLogin = ({ title, subtitle, subtext }: AuthLoginProps) => {
 
     try {
       await login(email, password);
-      setAlert({ type: 'success', message: 'Login successful!' });
-
-      setTimeout(() => {
-        navigate('/');
-      }, 1000);
+      navigate('/', { state: { success: 'Login successful!' } });
     } catch (error: any) {
       setAlert({
         type: 'error',
