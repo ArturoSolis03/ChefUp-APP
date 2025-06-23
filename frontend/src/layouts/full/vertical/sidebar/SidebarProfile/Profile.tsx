@@ -64,7 +64,7 @@ export const Profile = () => {
                 overflow: 'hidden',
               }}
             >
-              Markarn Doe
+              
             </Typography>
           </Box>
           }
