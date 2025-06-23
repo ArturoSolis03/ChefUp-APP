@@ -42,6 +42,10 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
             script {
                 def scannerHome = tool 'SonarScanner'
+
+                sh 'npm install'
+                sh 'npm run test -- --coverage'
+
                 sh "${scannerHome}/bin/sonar-scanner"
         }
       }
@@ -63,6 +67,10 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
             script {
                 def scannerHome = tool 'SonarScanner'
+
+                sh 'npm install'
+                sh 'npm run test -- --coverage'
+                
                 sh "${scannerHome}/bin/sonar-scanner"
         }
       }
