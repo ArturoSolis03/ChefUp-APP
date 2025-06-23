@@ -7,7 +7,7 @@ import {
   isTokenValid,
 } from '../auth/auth';
 
-const IP = '18.234.61.98';
+const IP = '18.212.212.159';
 
 const api = (forFavorites: boolean = false) => {
   const baseURL = forFavorites
