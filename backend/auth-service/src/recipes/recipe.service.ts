@@ -12,7 +12,7 @@ export class RecipeService {
   private readonly recipesPerPage = 8;
   private readonly maxPages = 4;
 
-  private readonly favoritesServiceUrl = 'http://18.234.61.98:3001';
+  private readonly favoritesServiceUrl = 'http://18.212.212.159:3001';
 
   private async getUserFavoriteIds(userToken: string): Promise<number[]> {
     try {
